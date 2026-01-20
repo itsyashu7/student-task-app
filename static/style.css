@@ -1,0 +1,20 @@
+body{
+    padding: 20px;
+    margin-top: 100px;
+    text-align: center;
+}
+.container{
+    border: 2px solid teal;
+    border-radius: 10px;
+    width: 100%;
+}
+input,button{
+ border-radius:25px
+}
+button:hover{
+    color:rgb(142, 246, 194);
+}
+input:hover{
+    color:rgb(6, 44, 65);
+    background-color: rgb(112, 154, 197)
+}
