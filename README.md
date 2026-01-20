@@ -1,0 +1,30 @@
+# Student Task Management App
+
+A simple full-stack web application to manage daily student tasks.
+
+## 🚀 Features
+- Login UI
+- Clean project structure
+- Responsive design (basic)
+- Built using HTML, CSS, and Python (Flask)
+
+## 🛠️ Tech Stack
+- Frontend: HTML, CSS
+- Backend: Python (Flask)
+- Database: SQLite (to be added)
+
+## 📂 Project Structure
+student-task-app/
+│
+├── app.py
+├── templates/
+│   └── login.html
+├── static/
+│   └── style.css
+└── README.md
+
+## 📌 Status
+Day 1 completed – Login page UI and setup done.
+
+## 👨‍💻 Author
+Yash
