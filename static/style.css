@@ -7,14 +7,18 @@ body{
     border: 2px solid teal;
     border-radius: 10px;
     width: 100%;
+    margin:auto;
+    padding:20px;
 }
 input,button{
- border-radius:25px
+ border-radius:25px;
+ padding:10px;
+ width:90%;
 }
 button:hover{
     color:rgb(142, 246, 194);
 }
 input:hover{
     color:rgb(6, 44, 65);
-    background-color: rgb(112, 154, 197)
+    background-color: rgb(112, 154, 197);
 }
