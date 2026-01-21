@@ -26,5 +26,13 @@ student-task-app/
 ## 📌 Status
 Day 1 completed – Login page UI and setup done.
 
+Day 2 completed - Combined Day 2 & Day 3 work finished.
+- Flask backend fully integrated with frontend
+- HTML templates rendered using Flask
+- CSS successfully linked using static folder
+- Base template created
+- Dashboard implemented
+
+
 ## 👨‍💻 Author
 Yash
