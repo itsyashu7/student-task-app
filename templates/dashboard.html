@@ -3,6 +3,19 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h3>Welcome {{username}}</h3>
-<p>This is your dashboard.</p>
+<a href="/logout">🔌</a>
+<h3>Welcome {{username}}</h3> 
+<form method="POST" action="/add-task">
+    <input type="text" name="task" placeholder="Enter Task" required>
+    <button type="submit">Add Task</button>
+</form>
+
+<h4>Your Tasks</h4>
+<ul>
+    {% for t in tasks %}
+    <li>{{ t["task"] }}</li>
+    {% else %}
+    <li>No Tasks yet</li>
+    {% endfor %}
+</ul>
 {% endblock %}
