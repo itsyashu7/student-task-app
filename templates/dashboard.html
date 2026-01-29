@@ -3,7 +3,6 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<a href="/logout">🔌</a>
 <h3>Welcome {{username}}</h3> 
 <form method="POST" action="/add-task">
     <input type="text" name="task" placeholder="Enter Task" required>
@@ -13,9 +12,16 @@
 <h4>Your Tasks</h4>
 <ul>
     {% for t in tasks %}
-    <li>{{ t["task"] }}</li>
-    {% else %}
-    <li>No Tasks yet</li>
+    <li>{% if t["status"] == "completed" %}
+        <s>{{ t["task"] }}</s>
+        {% else %}
+        {{ t["task"] }}
+        {% endif %}
+
+        <a href="/toggle-task/{{ t['id'] }}">✔️</a>
+        <a href="/delete-task/{{ t['id'] }}">❌</a>
+   
     {% endfor %}
 </ul>
+<a href="/logout">Logout</a>
 {% endblock %}
