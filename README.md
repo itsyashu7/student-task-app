@@ -51,7 +51,17 @@ Day 3 completed - creation of db and flask corrections
 - Delete task feature
 - Mark task as completed / pending
 
-Backend core functionality completed.
+Day 4 completed -User sessions and database integration completed
+
+- Implemented Flask session management for login persistence
+- Protected routes to prevent unauthorized access
+- Integrated SQLite database for permanent task storage
+- Created tasks table with user-wise task mapping
+- Implemented add task functionality with database storage
+- Implemented delete task feature
+- Implemented task status toggle (pending / completed)
+- Added flash messages for user feedback
+- Improved application stability and security checks
 
 
 ##  Author
