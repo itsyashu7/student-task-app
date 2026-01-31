@@ -3,6 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+<div class="container">
 <h3>Welcome {{username}}</h3> 
 <form method="POST" action="/add-task">
     <input type="text" name="task" placeholder="Enter Task" required>
@@ -24,4 +25,5 @@
     {% endfor %}
 </ul>
 <a href="/logout">Logout</a>
+</div>
 {% endblock %}

@@ -44,7 +44,7 @@ def login():
         flash("Login successful")
         return redirect("/dashboard")
 
-    flash("Login failed")
+    flash("Login failed","error")
     return redirect("/")
 
 
@@ -82,7 +82,7 @@ def add_task():
         )
         conn.commit()
         conn.close()
-        flash("Task added successfully")
+        flash("Task added successfully","success")
 
     return redirect("/dashboard")
 
@@ -100,7 +100,7 @@ def delete_task(task_id):
     conn.commit()
     conn.close()
 
-    flash("Task deleted")
+    flash("Task deleted","success")
     return redirect("/dashboard")
 
 
@@ -117,7 +117,7 @@ def toggle_task(task_id):
 
     if task is None:
         conn.close()
-        flash("Task not found")
+        flash("Task not found","error")
         return redirect("/dashboard")
 
     new_status = "completed" if task["status"] == "pending" else "pending"
@@ -129,7 +129,7 @@ def toggle_task(task_id):
     conn.commit()
     conn.close()
 
-    flash("Task status updated")
+    flash("Task status updated","info")
     return redirect("/dashboard")
 
 
