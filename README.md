@@ -63,6 +63,12 @@ Day 4 completed -User sessions and database integration completed
 - Added flash messages for user feedback
 - Improved application stability and security checks
 
+Day 5 completed -Focused on frontend polish and user experience improvements
+
+- Improved overall UI to a modern, clean card-based design
+- Enhanced user experience with smooth animations for task actions
+- Improved visual feedback for task actions (add, delete, toggle)
+- Performed UI and UX cleanup for better readability and layout consistency
 
 ##  Author
 Yash
