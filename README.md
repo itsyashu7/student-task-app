@@ -70,5 +70,12 @@ Day 5 completed -Focused on frontend polish and user experience improvements
 - Improved visual feedback for task actions (add, delete, toggle)
 - Performed UI and UX cleanup for better readability and layout consistency
 
+Day 6 completed -focused on password login and hashing a password
+- Password auth logic
+- Users & tasks tables
+- Session handling
+- Real debugging
+- Architecture testing
+
 ##  Author
 Yash

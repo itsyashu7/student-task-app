@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, flash
+from werkzeug.security import generate_password_hash,check_password_hash
 import sqlite3
 
 app = Flask(__name__)
@@ -29,22 +30,36 @@ def create_table():
 create_table()
 
 
+def create_users_table():
+    conn = get_db()
+    conn.execute("""CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT UNIQUE,password TEXT)""")
+    conn.commit()
+    conn.close()
+
+create_users_table()
+
+
 # ---------- ROUTES ----------
 @app.route("/")
 def home():
-    return render_template("login.html")
+    return render_template("register.html")
 
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form.get("username")
+    password = request.form.get("password")
 
-    if username:
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE username = ?",(username,)).fetchone()
+    conn.close()
+
+    if user and check_password_hash(user["password"],password):
         session["username"] = username
-        flash("Login successful")
+        flash("Login Successful","success")
         return redirect("/dashboard")
-
-    flash("Login failed","error")
+    
+    flash("Invalid username or password","error")
     return redirect("/")
 
 
@@ -60,11 +75,7 @@ def dashboard():
     ).fetchall()
     conn.close()
 
-    return render_template(
-        "dashboard.html",
-        username=session["username"],
-        tasks=tasks
-    )
+    return render_template("dashboard.html", username=session["username"],tasks=tasks)
 
 
 @app.route("/add-task", methods=["POST"])
@@ -132,6 +143,24 @@ def toggle_task(task_id):
     flash("Task status updated","info")
     return redirect("/dashboard")
 
+@app.route("/register", methods=["GET","POST"])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        hashed_password = generate_password_hash(password)
+
+        try:
+            conn = get_db()
+            conn.execute("INSERT INTO users (username,password) VALUES (?, ?)",(username, hashed_password))
+            conn.commit()
+            conn.close()
+            flash("Account created successfully","success")
+            return redirect("/")
+        except sqlite3.IntegrityError:
+            flash("Username already exists","error")
+    return render_template("register.html")
 
 @app.route("/logout")
 def logout():
