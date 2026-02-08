@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash,check_password_hash
+from functools import wraps
 import sqlite3
 
 app = Flask(__name__)
@@ -8,7 +9,7 @@ app.secret_key = "supersecretkey"
 
 # ---------- DATABASE ----------
 def get_db():
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("database.db",timeout=10,check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -39,16 +40,33 @@ def create_users_table():
 create_users_table()
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args,  **kwargs):
+        if "username" not in session:
+            flash("Please login first", "error")
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # ---------- ROUTES ----------
 @app.route("/")
 def home():
-    return render_template("register.html")
+    return redirect("/register")
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET" , "POST"])
 def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    
     username = request.form.get("username")
     password = request.form.get("password")
+
+    if not username or not password:
+        flash("Username and password are required", "error")
+        return redirect("/register") 
 
     conn = get_db()
     user = conn.execute("SELECT * FROM users WHERE username = ?",(username,)).fetchone()
@@ -60,10 +78,11 @@ def login():
         return redirect("/dashboard")
     
     flash("Invalid username or password","error")
-    return redirect("/")
+    return redirect("/login")
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     if "username" not in session:
         return redirect("/")
@@ -79,6 +98,7 @@ def dashboard():
 
 
 @app.route("/add-task", methods=["POST"])
+@login_required
 def add_task():
     if "username" not in session:
         return redirect("/")
@@ -99,6 +119,7 @@ def add_task():
 
 
 @app.route("/delete-task/<int:task_id>")
+@login_required
 def delete_task(task_id):
     if "username" not in session:
         return redirect("/")
@@ -116,6 +137,7 @@ def delete_task(task_id):
 
 
 @app.route("/toggle-task/<int:task_id>")
+@login_required
 def toggle_task(task_id):
     if "username" not in session:
         return redirect("/")
@@ -149,6 +171,9 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
 
+        if not username or not password:
+            flash("All fields are required", "error")
+
         hashed_password = generate_password_hash(password)
 
         try:
@@ -157,12 +182,13 @@ def register():
             conn.commit()
             conn.close()
             flash("Account created successfully","success")
-            return redirect("/")
+            return redirect("/login")
         except sqlite3.IntegrityError:
             flash("Username already exists","error")
     return render_template("register.html")
 
 @app.route("/logout")
+@login_required
 def logout():
     session.clear()
     flash("Logged out successfully")
