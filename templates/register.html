@@ -4,11 +4,53 @@
 <div class="container">
     <h2>Register</h2>
     <form method="POST">
-        <input type="text" name="username" placeholder="Create username" required>
-        <input type="password" name="password" placeholder="Create password" required>
+        <input type="text" id="username" name="username" placeholder="Username" required>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <span class="toggle" onclick="togglePassword('password')">👁️</span>
+        </div>
+        <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" required>
+        <p id="password-message"></p>
         <button type="submit">Register</button>
     </form>
 
-    <p style="text-align:center; margin-top:10px;"> Already have an account? <a href="/login">Login</a></p>
+    <p style="text-align:center;"> Already have an account? <a href="/login">Login</a></p>
 </div>
+<script>
+    const password = document.getElementById("password");
+    const confirmpassword = document.getElementBId("confirmpassword");
+    const message = document.getElementById("password-message");
+
+    function validatePassword(){
+        if (confirmPassword.value === ""){
+            message.textContent = "";
+            confirmPassword.classList.remove("valid","invalid");
+            return;
+        }
+        if (password.value === confirmPassword.value){
+            message.textContent = "Passwords match!!";
+            message.style.color = "green";
+            confirmPassword.style.borderColor = "green";
+        } else {
+            message.textContent = "passwords do not match!";
+            message.style.color = "red";
+            confirmPassword.style.borderColor = "red";
+        }
+    }
+
+    password.addEventListener("keyup", validatePassword);
+    confirmPassword.addEventListener("keyup", validatePassword);
+
+    function togglePassword(id){
+        const input = document.getElementById(id);
+
+        if (input.type === "password" ) {
+            input.type = "text";
+        
+        } else {
+            input.type = "password";
+        }
+    }
+</script>
 {% endblock %}

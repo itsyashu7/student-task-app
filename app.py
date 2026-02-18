@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, flash,url_for
 from werkzeug.security import generate_password_hash,check_password_hash
 from functools import wraps
-import sqlite3
+from  itsdangerous import URLSafeTimedSerializer
+import sqlite3,re
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
+serializer = URLSafeTimedSerializer(app.secret_key)
 
 
 # ---------- DATABASE ----------
@@ -28,15 +30,15 @@ def create_table():
     conn.close()
 
 
-create_table()
 
 
 def create_users_table():
     conn = get_db()
-    conn.execute("""CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT UNIQUE,password TEXT)""")
+    conn.execute("""CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT UNIQUE,email TEXT UNIQUE,password TEXT)""")
     conn.commit()
     conn.close()
 
+create_table()
 create_users_table()
 
 
@@ -80,6 +82,58 @@ def login():
     flash("Invalid username or password","error")
     return redirect("/login")
 
+@app.route("/forgot-password", methods=["GET","POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+
+        conn = get_db()
+        user = conn.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
+        conn.close()
+        if user:
+            token = serializer.dumps(email,salt="password-reset-salt")
+            reset_url = url_for("reset_password",token=token, _external=True)
+            print("Reset link: ",reset_url)
+            flash("Password reset link sent to your email (check terminal)","info")
+            return redirect("/login")
+        flash("email not found","error")
+        return redirect("/forgot-password")
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        email = serializer.loads(
+            token,
+            salt="password-reset-salt",
+            max_age=600  # 10 minutes
+        )
+    except:
+        flash("Reset link expired or invalid", "error")
+        return redirect("/login")
+
+    if request.method == "POST":
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        if password != confirm_password:
+            flash("Passwords do not match", "error")
+            return redirect(request.url)
+
+        hashed_password = generate_password_hash(password)
+
+        conn = get_db()
+        conn.execute(
+            "UPDATE users SET password = ? WHERE email = ?",
+            (hashed_password, email)
+        )
+        conn.commit()
+        conn.close()
+
+        flash("Password updated successfully", "success")
+        return redirect("/login")
+
+    return render_template("reset_password.html")
 
 @app.route("/dashboard")
 @login_required
@@ -169,16 +223,26 @@ def toggle_task(task_id):
 def register():
     if request.method == "POST":
         username = request.form.get("username")
+        email = request.form.get("email")
         password = request.form.get("password")
+        confirmpassword = request.form.get("confirmpassword")
 
-        if not username or not password:
+        if not username or not password or not email or not confirmpassword:
             flash("All fields are required", "error")
+        
+        if  password!=confirmpassword:
+            flash("Passwords do not match","error")
+        
+        pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
 
+        if not re.match(pattern, password):
+            flash("Password must contain 8 characters,1 uppercase,1 lowercase,1 number and special character","error")
+        
         hashed_password = generate_password_hash(password)
 
         try:
             conn = get_db()
-            conn.execute("INSERT INTO users (username,password) VALUES (?, ?)",(username, hashed_password))
+            conn.execute("INSERT INTO users (username,email,password) VALUES (?, ?, ?)",(username,email, hashed_password))
             conn.commit()
             conn.close()
             flash("Account created successfully","success")
