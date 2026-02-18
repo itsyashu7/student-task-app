@@ -9,73 +9,86 @@ A simple full-stack web application to manage daily student tasks.
 - Built using HTML, CSS, and Python (Flask)
 
 ##  Tech Stack
-- Frontend: HTML, CSS
+- Frontend: HTML, CSS, JS
 - Backend: Python (Flask)
-- Database: SQLite (to be added)
+- Database: SQLite
+- itsdangerous
+- Werkzeug Security
+- HTML, CSS, JavaScript
 
 ##  Project Structure
 student-task-app/
+│   app.py
+│   database.db
+│   README.md
+│   __init__.py
 │
-├── app.py                  # Main Flask application
-├── database.db             # SQLite database
-├── requirements.txt        # Python dependencies (optional now)
+├───.vscode
+│       launch.json
 │
-├── templates/              # HTML (Jinja templates)
-│   ├── base.html           # Common layout (navbar, styles)
-│   ├── login.html          # Login page
-│   └── dashboard.html      # Dashboard (tasks view)
+├───static
+│       .gitignore 
+│       background.jpg 
+│       requirements.txt
+│       style.css
 │
-├── static/                 # Static files
-│   ├── style.css           # Main CSS file
-│
-├── README.md               # Project documentation
-└── .gitignore              # Files to ignore in Git
+└───templates
+        base.html
+        dashboard.html
+        forgot_password.html
+        login.html
+        register.html
+        reset_password.html
 
 
 ##  Status
-Day 1 completed – Login page UI and setup done.
 
-Day 2 completed - Combined Day 2 & Day 3 work finished.
+###  Day 1 – Project Setup
+- Login page UI created
+- Basic Flask setup completed
+- Project structure initialized
+
+###  Day 2 – Frontend & Backend Integration
 - Flask backend fully integrated with frontend
-- HTML templates rendered using Flask
-- CSS successfully linked using static folder
+- HTML templates rendered using Jinja
+- CSS linked via static folder
 - Base template created
 - Dashboard implemented
 
-Day 3 completed - creation of db and flask corrections
-- Flask sessions implemented (login persistence)
-- SQLite database integration
+###  Day 3 – Database Integration
+- SQLite database connected
 - Tasks stored permanently
 - Add task functionality
 - View tasks per user
 - Delete task feature
-- Mark task as completed / pending
+- Task status toggle (pending/completed)
 
-Day 4 completed -User sessions and database integration completed
+###  Day 4 – Session Management & Stability
+- Flask session management implemented
+- Protected routes from unauthorized access
+- Flash messages added for user feedback
+- Improved application stability and error handling
 
-- Implemented Flask session management for login persistence
-- Protected routes to prevent unauthorized access
-- Integrated SQLite database for permanent task storage
-- Created tasks table with user-wise task mapping
-- Implemented add task functionality with database storage
-- Implemented delete task feature
-- Implemented task status toggle (pending / completed)
-- Added flash messages for user feedback
-- Improved application stability and security checks
+###  Day 5 – UI & UX Improvements
+- Modern card-based design applied
+- Smooth animations added
+- Improved visual feedback for task actions
+- Layout consistency improvements
 
-Day 5 completed -Focused on frontend polish and user experience improvements
+###  Day 6 – Authentication System
+- Implemented password-based login system
+- Users table created with secure password storage
+- Password hashing using Werkzeug
+- Session-based authentication flow
+- Debugged database locking issues
 
-- Improved overall UI to a modern, clean card-based design
-- Enhanced user experience with smooth animations for task actions
-- Improved visual feedback for task actions (add, delete, toggle)
-- Performed UI and UX cleanup for better readability and layout consistency
+###  Day 7 – Validation & Security Hardening
+- Added email field during registration
+- Implemented confirm password validation
+- Added live password match feedback (JavaScript)
+- Backend validation for all registration fields
+- Improved security checks and form validation
 
-Day 6 completed -focused on password login and hashing a password
-- Password auth logic
-- Users & tasks tables
-- Session handling
-- Real debugging
-- Architecture testing
 
 ##  Author
 Yash
