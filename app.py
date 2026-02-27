@@ -16,6 +16,8 @@ app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.getenv("EMAIL_USER")
 app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv("EMAIL_USER")
+app.config['MAIL_TIMEOUT'] = 20
+
 
 mail = Mail(app)
 app.secret_key = "supersecretkey"
