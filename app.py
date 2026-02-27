@@ -4,7 +4,7 @@ from functools import wraps
 from  itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail,Message
 from dotenv import load_dotenv
-import sqlite3,re,os
+import sqlite3,re,os,threading
 
 app = Flask(__name__)
 load_dotenv()
@@ -157,16 +157,20 @@ def forgot_password():
             </div>
             </body>
             </html>"""
-            try:
-                mail.send(msg)
-                flash("reset link sent check your email","success")
-            except Exception as e:
-                print("MAIL ERROR:",e)
-                flash("Email service temporarily unavailable","error")
+            
+            threading.Thread(target=send_async_email,args=(app,msg)).start()
+            
             
         else:
             flash("email not found","error")
     return render_template("forgot_password.html")
+def send_async_email(app,msg):
+                with app.app_context():
+                    try:
+                        mail.send(msg)
+                        flash("reset link sent check your email","success")
+                    except Exception as e:
+                        print("Email error:",e)
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
