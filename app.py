@@ -12,11 +12,10 @@ load_dotenv()
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.getenv("EMAIL_USER")
 app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv("EMAIL_USER")
-print(app.config['MAIL_USERNAME'])
-print(app.config['MAIL_PASSWORD'])
 
 mail = Mail(app)
 app.secret_key = "supersecretkey"
@@ -156,8 +155,13 @@ def forgot_password():
             </div>
             </body>
             </html>"""
-            flash("reset link sent check your email","success")
-            mail.send(msg)
+            try:
+                mail.send(msg)
+                flash("reset link sent check your email","success")
+            except Exception as e:
+                print("MAIL ERROR:",e)
+                flash("Email service temporarily unavailable","error")
+            
         else:
             flash("email not found","error")
     return render_template("forgot_password.html")
