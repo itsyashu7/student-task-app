@@ -1,1 +1,7 @@
 Flask==2.3.3
+Flask-Mail
+python-dotenv
+itsdangerous
+gunicorn
+functools
+werkzueg.security

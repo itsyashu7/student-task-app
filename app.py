@@ -2,9 +2,23 @@ from flask import Flask, render_template, request, redirect, session, flash,url_
 from werkzeug.security import generate_password_hash,check_password_hash
 from functools import wraps
 from  itsdangerous import URLSafeTimedSerializer
-import sqlite3,re
+from flask_mail import Mail,Message
+from dotenv import load_dotenv
+import sqlite3,re,os
 
 app = Flask(__name__)
+load_dotenv()
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv("EMAIL_USER")
+app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("EMAIL_USER")
+print(app.config['MAIL_USERNAME'])
+print(app.config['MAIL_PASSWORD'])
+
+mail = Mail(app)
 app.secret_key = "supersecretkey"
 serializer = URLSafeTimedSerializer(app.secret_key)
 
@@ -85,7 +99,7 @@ def login():
 @app.route("/forgot-password", methods=["GET","POST"])
 def forgot_password():
     if request.method == "POST":
-        email = request.form.get("email")
+        email = request.form.get("email").strip().lower()
 
         conn = get_db()
         user = conn.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
@@ -93,11 +107,59 @@ def forgot_password():
         if user:
             token = serializer.dumps(email,salt="password-reset-salt")
             reset_url = url_for("reset_password",token=token, _external=True)
-            print("Reset link: ",reset_url)
-            flash("Password reset link sent to your email (check terminal)","info")
-            return redirect("/login")
-        flash("email not found","error")
-        return redirect("/forgot-password")
+            msg = Message(subject="Reset Your Password",recipients=[email])
+            msg.html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+            body {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            }}
+            .container {{
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }}
+            .btn {{
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            }}
+            .footer {{
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+            }}
+            </style>
+            </head>
+            <body>
+            <div class="container">
+            <h2>Password Reset Request</h2>
+            <p>Hello,</p>
+            <p>You requested to reset your password.</p>
+            <p>Click the button below to reset it:</p>
+            <a href="{reset_url}" class="btn">Reset Password</a>
+            <p>This link will expire in 10 minutes.</p>                                                                                                                                                                                                                                                                                                                                                            
+            <div class="footer">
+            If you did not request this, please ignore this email.
+            </div>
+            </div>
+            </body>
+            </html>"""
+            flash("reset link sent check your email","success")
+            mail.send(msg)
+        else:
+            flash("email not found","error")
     return render_template("forgot_password.html")
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -223,7 +285,7 @@ def toggle_task(task_id):
 def register():
     if request.method == "POST":
         username = request.form.get("username")
-        email = request.form.get("email")
+        email = request.form.get("email").strip().lower()
         password = request.form.get("password")
         confirmpassword = request.form.get("confirmpassword")
 
@@ -260,4 +322,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=5000,debug=True)
